@@ -106,3 +106,23 @@ class Todoer:
         read.todo_list.append(todo)
         write = self._db_handler.write_todos(read.todo_list)
         return CurrentTodo(todo, write.error)
+
+    def get_statistics(self) -> Dict[str, int]:
+        """Get statistics about todos."""
+        read = self._db_handler.read_todos()
+        if read.error:
+            return {}
+        
+        stats = {
+            "total": len(read.todo_list),
+            "todo": 0,
+            "in-progress": 0,
+            "done": 0
+        }
+        
+        for item in read.todo_list:
+            status = item.get("Status", "todo")
+            if status in stats:
+                stats[status] += 1
+                
+        return stats
